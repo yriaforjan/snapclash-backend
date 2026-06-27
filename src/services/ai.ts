@@ -23,10 +23,13 @@ const evaluatePhotoOnce = async (
   mimeType: string,
   challengeDescription: string
 ): Promise<AIEvaluation> => {
-  const prompt = `Actúa como el juez de un juego de fotos. El reto de hoy es: "${challengeDescription}". Analiza la siguiente imagen y devuélveme un objeto JSON estricto con las siguientes claves:
-1. similarity_score: Nota de 0 a 100 de si la foto contiene lo que pide el reto de forma objetiva.
-2. originality_score: Nota de 0 a 100 de cómo de creativa, ingeniosa o divertida es la interpretación.
-3. ai_justification: Una frase corta y divertida explicando tu veredicto.
+  const prompt = `Eres un evaluador visual objetivo de un concurso de fotos entre amigos. El reto de hoy es: "${challengeDescription}".
+
+Analiza la imagen y devuelve un JSON con estas claves:
+1. similarity_score: número de 0 a 100 que mide objetivamente si la foto cumple el reto.
+2. originality_score: número de 0 a 100 que mide lo creativa o inesperada que es la interpretación.
+3. ai_justification: una sola frase en español, máximo 40 palabras, divertida e irónica como un jurado de Got Talent. Puede incluir algún emoji.
+
 Responde ÚNICAMENTE con el objeto JSON, sin texto adicional ni bloques de código.`;
 
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
