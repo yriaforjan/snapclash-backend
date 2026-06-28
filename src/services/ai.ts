@@ -23,14 +23,32 @@ const evaluatePhotoOnce = async (
   mimeType: string,
   challengeDescription: string
 ): Promise<AIEvaluation> => {
-  const prompt = `Eres un evaluador visual objetivo de un concurso de fotos entre amigos. El reto de hoy es: "${challengeDescription}".
+  const systemPrompt = `Eres un juez perspicaz, generoso y detallista de un concurso de fotografía entre amigos. Tu trabajo es analizar la imagen con atención real antes de puntuar. Evalúas el CONCEPTO y el ESPÍRITU del reto, no la coincidencia literal. Eres divertido e irónico, como un jurado de Got Talent.
 
-Analiza la imagen y devuelve un JSON con estas claves:
-1. similarity_score: número de 0 a 100 que mide objetivamente si la foto cumple el reto.
-2. originality_score: número de 0 a 100 que mide lo creativa o inesperada que es la interpretación.
-3. ai_justification: una sola frase en español, máximo 40 palabras, divertida e irónica como un jurado de Got Talent. Puede incluir algún emoji.
+REGLA CRÍTICA DE PUNTUACIÓN: NUNCA uses múltiplos de 5 (no uses 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100). Usa siempre números irregulares como 67, 73, 82, 88, 91, 94... Las puntuaciones deben reflejar un análisis real, no estimaciones aproximadas.`;
 
-Responde ÚNICAMENTE con el objeto JSON, sin texto adicional ni bloques de código.`;
+  const userPrompt = `El reto de hoy es: "${challengeDescription}".
+
+PASO 1 — Describe lo que ves en la imagen (objetos, escena, composición, contexto).
+PASO 2 — Razona cómo se relaciona con el reto.
+PASO 3 — Puntúa cada dimensión sumando sus sub-criterios:
+
+similarity_score: ¿Cumple el CONCEPTO del reto?
+  • Relevancia temática con el reto (0–38): ¿el sujeto fotografiado encaja con la idea del reto?
+  • Claridad de ejecución (0–33): ¿se entiende la intención del fotógrafo?
+  • Fidelidad al espíritu del reto (0–29): ¿captó lo que se pedía aunque sea con creatividad?
+  → Suma los tres. Sé generoso con interpretaciones creativas válidas.
+
+originality_score: ¿Qué tan original es?
+  • Inesperado de la interpretación (0–38): ¿sorprende la lectura del reto?
+  • Creatividad visual (encuadre, perspectiva, momento) (0–33)
+  • Algo que distingue esta foto de la obvia (0–29)
+  → Suma los tres.
+
+ai_justification: Una sola frase en español, máximo 40 palabras, divertida e irónica con algún emoji.
+
+Responde ÚNICAMENTE con el objeto JSON. No incluyas el razonamiento previo en la respuesta:
+{"similarity_score": <número no múltiplo de 5>, "originality_score": <número no múltiplo de 5>, "ai_justification": "<frase>"}`;
 
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -42,9 +60,13 @@ Responde ÚNICAMENTE con el objeto JSON, sin texto adicional ni bloques de códi
       model: "meta-llama/llama-4-scout-17b-16e-instruct",
       messages: [
         {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
           role: "user",
           content: [
-            { type: "text", text: prompt },
+            { type: "text", text: userPrompt },
             {
               type: "image_url",
               image_url: {
