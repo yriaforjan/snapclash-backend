@@ -50,14 +50,16 @@ ai_justification: Una sola frase en español, máximo 40 palabras, divertida e i
 Responde ÚNICAMENTE con el objeto JSON. No incluyas el razonamiento previo en la respuesta:
 {"similarity_score": <número no múltiplo de 5>, "originality_score": <número no múltiplo de 5>, "ai_justification": "<frase>"}`;
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "HTTP-Referer": "https://snapclash.app",
+      "X-Title": "Snapclash",
     },
     body: JSON.stringify({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model: "google/gemma-4-26b-a4b-it:free",
       messages: [
         {
           role: "system",
@@ -81,7 +83,7 @@ Responde ÚNICAMENTE con el objeto JSON. No incluyas el razonamiento previo en l
 
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`Groq HTTP ${res.status}: ${errText.slice(0, 200)}`);
+    throw new Error(`OpenRouter HTTP ${res.status}: ${errText.slice(0, 200)}`);
   }
 
   const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
@@ -91,7 +93,7 @@ Responde ÚNICAMENTE con el objeto JSON. No incluyas el razonamiento previo en l
     .replace(/\s*```$/, "")
     .trim();
   const jsonMatch = clean.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error(`Groq no devolvió JSON válido: ${raw.slice(0, 200)}`);
+  if (!jsonMatch) throw new Error(`OpenRouter no devolvió JSON válido: ${raw.slice(0, 200)}`);
 
   return JSON.parse(jsonMatch[0]);
 };
