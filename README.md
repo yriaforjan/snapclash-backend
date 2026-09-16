@@ -53,7 +53,7 @@ Suscripción a notificaciones web push para recordar el reto diario. Las notific
 | **Ficheros**       | Multer                               | 2.1.1   | Manejo de subida de archivos               |
 | **Imágenes**       | Sharp                                | 0.35.2  | Compresión y redimensionado antes de subir |
 | **Almacenamiento** | Cloudinary                           | 2.10.0  | Almacenamiento de imágenes en la nube      |
-| **IA**             | Groq (Llama 4 Scout Vision)          | —       | Evaluación automática de fotos             |
+| **IA**             | Mistral (Pixtral 12B Vision)         | —       | Evaluación automática de fotos             |
 | **Email**          | Brevo                                | 5.0.4   | Envío de emails de verificación            |
 | **Push**           | web-push                             | 3.6.7   | Notificaciones push con VAPID              |
 | **Cron**           | node-cron                            | 4.2.1   | Tareas programadas                         |
@@ -68,7 +68,7 @@ Suscripción a notificaciones web push para recordar el reto diario. Las notific
 | **Node.js**      | 18+     | —                                                 |
 | **MongoDB**      | 6+      | Local o MongoDB Atlas                             |
 | **Cloudinary**   | —       | Cuenta necesaria para almacenamiento de imágenes  |
-| **Groq**           | —   | API Key de Groq (console.groq.com)                |
+| **Mistral**        | —   | API Key de Mistral (console.mistral.ai)            |
 | **Brevo**        | —       | Cuenta para envío de emails                       |
 | **VAPID keys**   | —       | Generables con `npx web-push generate-vapid-keys` |
 
@@ -107,7 +107,7 @@ CLOUDINARY_CLOUD_NAME=tu-cloud-name
 CLOUDINARY_API_KEY=tu-api-key
 CLOUDINARY_API_SECRET=tu-api-secret
 
-GROQ_API_KEY=tu-api-key-de-groq
+MISTRAL_API_KEY=tu-api-key-de-mistral
 
 BREVO_API_KEY=tu-api-key-de-brevo
 BREVO_SENDER_EMAIL=noreply@tusitio.com
@@ -128,7 +128,7 @@ VAPID_EMAIL=mailto:tu@email.com
 | `CLOUDINARY_CLOUD_NAME`          |           ✅            | Nombre de tu cloud en Cloudinary         |
 | `CLOUDINARY_API_KEY`             |           ✅            | API Key de Cloudinary                    |
 | `CLOUDINARY_API_SECRET`          |           ✅            | API Secret de Cloudinary                 |
-| `GROQ_API_KEY`                   |           ✅            | API Key de Groq (console.groq.com)       |
+| `MISTRAL_API_KEY`                |           ✅            | API Key de Mistral (console.mistral.ai)  |
 | `BREVO_API_KEY`                  |           ✅            | API Key de Brevo                         |
 | `BREVO_SENDER_EMAIL`             |           ✅            | Email verificado en Brevo como remitente |
 | `VAPID_PUBLIC_KEY`               |           ✅            | Clave pública VAPID para web push        |
@@ -168,7 +168,7 @@ sequenceDiagram
     participant U as Cliente
     participant API as Backend
     participant Cloud as Cloudinary
-    participant AI as Groq AI
+    participant AI as Mistral AI
     participant DB as MongoDB
 
     U->>API: POST /submissions (foto)
@@ -236,7 +236,7 @@ snapclash-backend/
 │   │   ├── seedChallenges.ts       # Seed de retos de ejemplo
 │   │   └── seedUsersAndGroups.ts   # Seed de usuarios y grupos de prueba
 │   ├── services/
-│   │   └── ai.ts                   # Evaluación de fotos con Groq (Llama Vision)
+│   │   └── ai.ts                   # Evaluación de fotos con Mistral (Pixtral Vision)
 │   ├── types/
 │   │   └── express.d.ts            # Extensión de tipos de Express (req.user)
 │   └── utils/
